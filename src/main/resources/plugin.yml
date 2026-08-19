@@ -1,0 +1,4 @@
+name: Trim-Changer
+version: '1.0.0'
+main: net.rusticpotatoes.trimChanger.TrimChanger
+api-version: '26.1.2'
