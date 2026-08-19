@@ -4,7 +4,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.rusticpotatoes.trimChanger.TrimChanger;
 import org.bukkit.command.CommandSender;
@@ -26,33 +25,33 @@ public class TrimCommand {
                                     CommandSender sender = context.getSource().getSender();
 
                                     if (!(sender instanceof Player player)) {
-                                        TrimChanger.sendMessage(sender, "You must be a player to use this command");
+                                        TrimChanger.CHAT_SENDER.sendMessage(sender, "You must be a player to use this command");
                                         return 0;
                                     }
 
                                     ItemStack item = player.getInventory().getItemInMainHand();
 
                                     if (item.isEmpty()) {
-                                        TrimChanger.sendMessage(player, "No item held");
+                                        TrimChanger.CHAT_SENDER.sendMessage(player, "No item held");
                                         return 0;
                                     }
 
                                     ItemMeta meta = item.getItemMeta();
 
                                     if (!(meta instanceof ArmorMeta armorMeta)) {
-                                        TrimChanger.sendMessage(player, "You are not holding any armor");
+                                        TrimChanger.CHAT_SENDER.sendMessage(player, "You are not holding any armor");
                                         return 0;
                                     }
 
                                     if (!armorMeta.hasTrim()) {
-                                        TrimChanger.sendMessage(player, "That armor doesn't have a trim");
+                                        TrimChanger.CHAT_SENDER.sendMessage(player, "That armor doesn't have a trim");
                                         return 0;
                                     }
 
                                     armorMeta.setTrim(null); // clears the armor trim
                                     item.setItemMeta(armorMeta);
                                     player.getInventory().setItemInMainHand(item);
-                                    TrimChanger.sendMessage(player, "Trimmed armor cleared");
+                                    TrimChanger.CHAT_SENDER.sendMessage(player, "Trimmed armor cleared");
 
                                     return 1;
                                 })
@@ -61,9 +60,9 @@ public class TrimCommand {
                                 .executes(context -> {
                                     CommandSender sender = context.getSource().getSender();
 
-                                    TrimChanger.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
-                                    TrimChanger.sendMessage(sender, "trim help: shares this info");
-                                    TrimChanger.sendMessage(sender, "trim query <player>: displays the armor and trim a player is wearing");
+                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
+                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim help: shares this info");
+                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim query <player>: displays the armor and trim a player is wearing");
 
                                     return 1;
                                 })
@@ -81,7 +80,7 @@ public class TrimCommand {
 
                                             ItemStack[] items = target.getInventory().getArmorContents();
 
-                                            TrimChanger.sendMessage(sender, target.displayName()
+                                            TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
                                                     .append(Component.text(" is wearing: ")).color(NamedTextColor.GOLD)
                                             );
 
@@ -92,7 +91,7 @@ public class TrimCommand {
                                                     ItemMeta meta = item.getItemMeta();
 
                                                     if (!(meta instanceof ArmorMeta armorMeta)) {
-                                                        TrimChanger.sendMessageWithoutPrefix(sender,
+                                                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
                                                                 Component.translatable(item.getType())
                                                         );
                                                     } else {
@@ -100,7 +99,7 @@ public class TrimCommand {
                                                         ArmorTrim trimData = armorMeta.getTrim();
 
                                                         if (trimData == null) {
-                                                            TrimChanger.sendMessageWithoutPrefix(sender,
+                                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
                                                                     Component.translatable(item.getType())
                                                                             .append(Component.text(": Not Trimmed")).color(NamedTextColor.GOLD)
                                                             );
@@ -109,7 +108,7 @@ public class TrimCommand {
                                                             TrimMaterial material = trimData.getMaterial();
                                                             TrimPattern pattern = trimData.getPattern();
 
-                                                            TrimChanger.sendMessageWithoutPrefix(sender,
+                                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
                                                                     Component.translatable(item.getType())
                                                                             .append(Component.text(": "))
                                                                             .append(material.description())
