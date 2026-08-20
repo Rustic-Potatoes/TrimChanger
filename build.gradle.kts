@@ -20,6 +20,14 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
+tasks.processResources {
+    inputs.property("version", version)
+
+    filesMatching("plugin.yml") {
+        expand(mapOf("version" to version))
+    }
+}
+
 tasks {
     compileJava {
         options.release = 25

@@ -11,6 +11,8 @@ import net.rusticpotatoes.trimChanger.text.ChatSender;
 import net.rusticpotatoes.trimChanger.text.GradientFormatter;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 public final class TrimChanger extends JavaPlugin {
 
     public static final TextColor ORANGE = TextColor.color(0xB87500);
@@ -21,14 +23,27 @@ public final class TrimChanger extends JavaPlugin {
 
     public static final ChatSender CHAT_SENDER = new ChatSender(TEXT_PREFIX, NamedTextColor.GRAY);
 
+    private static TrimChanger instance;
+
+    // plugin information
+    public final String name = this.getPluginMeta().getName();
+    public final String version = this.getPluginMeta().getVersion();
+    public final List<String> authors = this.getPluginMeta().getAuthors();
+
     @Override
     public void onEnable() {
+        instance = this;
 
+        // register trim command
         this.getLifecycleManager().registerEventHandler(
                 LifecycleEvents.COMMANDS,
                 event -> {
-                    TrimCommand.register(event.registrar());//TextColor.color(36, 144, 171)
+                    TrimCommand.register(event.registrar());
                 }
         );
+    }
+
+    public static TrimChanger getInstance() {
+        return instance;
     }
 }

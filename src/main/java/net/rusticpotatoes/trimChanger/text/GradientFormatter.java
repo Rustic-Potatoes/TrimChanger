@@ -8,7 +8,7 @@ public class GradientFormatter {
 
     public static TextComponent getGradient(TextColor color1, TextColor color2, String text) {
 
-        if (text.length() <= 1) { // if length is one or less, return just color1
+        if (text.isEmpty()) { // if text is empty, apply just color1 to avoid a division error
             return Component.text(text, color1);
         }
 

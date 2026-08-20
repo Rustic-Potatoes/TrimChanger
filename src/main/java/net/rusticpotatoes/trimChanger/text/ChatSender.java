@@ -48,4 +48,8 @@ public class ChatSender {
     }
 
 
+    public void sendMessageWithoutPrefix(CommandSender destination, String message) {
+        sendMessageWithoutPrefix(destination, Component.text(message), true);
+
+    }
 }

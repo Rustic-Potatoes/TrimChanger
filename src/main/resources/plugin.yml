@@ -1,4 +1,5 @@
 name: Trim-Changer
-version: '1.0.0'
+version: '${version}'
+authors: [RusticPotatoes]
 main: net.rusticpotatoes.trimChanger.TrimChanger
 api-version: '26.1.2'

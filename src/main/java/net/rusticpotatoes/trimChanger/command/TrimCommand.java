@@ -60,8 +60,8 @@ public class TrimCommand {
                                     CommandSender sender = context.getSource().getSender();
 
                                     TrimChanger.CHAT_SENDER.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
-                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim help: shares this info");
-                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim query <player>: displays the armor and trim a player is wearing");
+                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info");
+                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
 
                                     return 1;
                                 })
@@ -122,6 +122,16 @@ public class TrimCommand {
                                             return 1;
                                         })
                                 )
+                        ).then(Commands.literal("about") // shares info about the plugin
+                                .executes(context -> {
+                                    CommandSender sender = context.getSource().getSender();
+
+                                    TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
+                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
+                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
+
+                                    return 1;
+                                })
                         )
                         .build()
         );
