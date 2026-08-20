@@ -4,7 +4,6 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.rusticpotatoes.trimChanger.TrimChanger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -71,26 +70,26 @@ public class TrimCommand {
                         .then(Commands.literal("query") // displays the armor and trim a player is wearing
                                 .then(Commands.argument("player", ArgumentTypes.player())
                                         .executes(context -> {
+
                                             CommandSender sender = context.getSource().getSender();
 
-
                                             PlayerSelectorArgumentResolver resolver = context.getArgument("player", PlayerSelectorArgumentResolver.class);
-
                                             Player target = resolver.resolve(context.getSource()).getFirst();
 
-                                            ItemStack[] items = target.getInventory().getArmorContents();
+                                            ItemStack[] armorContents = target.getInventory().getArmorContents();
 
                                             TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
-                                                    .append(Component.text(" is wearing: ")).color(NamedTextColor.GOLD)
+                                                    .append(Component.text(" is wearing: "))
                                             );
 
-                                            for (ItemStack item : items) {
+                                            // loop through all armor slots
+                                            for (ItemStack item : armorContents) {
 
-                                                if (item != null) {
+                                                if (item != null) { // if not wearing any armor in that slot, ignore
 
                                                     ItemMeta meta = item.getItemMeta();
 
-                                                    if (!(meta instanceof ArmorMeta armorMeta)) {
+                                                    if (!(meta instanceof ArmorMeta armorMeta)) { // if not wearing armor but a wearable item
                                                         TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
                                                                 Component.translatable(item.getType())
                                                         );
@@ -98,10 +97,10 @@ public class TrimCommand {
 
                                                         ArmorTrim trimData = armorMeta.getTrim();
 
-                                                        if (trimData == null) {
+                                                        if (trimData == null) { // armor is not trimmed
                                                             TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
                                                                     Component.translatable(item.getType())
-                                                                            .append(Component.text(": Not Trimmed")).color(NamedTextColor.GOLD)
+                                                                            .append(Component.text(": Not Trimmed"))
                                                             );
                                                         } else {
 
@@ -113,7 +112,7 @@ public class TrimCommand {
                                                                             .append(Component.text(": "))
                                                                             .append(material.description())
                                                                             .append(Component.text(", "))
-                                                                            .append(pattern.description()).color(NamedTextColor.GOLD)
+                                                                            .append(pattern.description())
                                                             );
                                                         }
                                                     }
