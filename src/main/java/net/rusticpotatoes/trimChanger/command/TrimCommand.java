@@ -5,6 +5,7 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
 import net.rusticpotatoes.trimChanger.TrimChanger;
+import org.bukkit.EntityEffect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -49,6 +50,7 @@ public class TrimCommand {
 
                                     armorMeta.setTrim(null); // clears the armor trim
                                     item.setItemMeta(armorMeta);
+                                    player.playEffect(EntityEffect.TELEPORT_ENDER);
                                     player.getInventory().setItemInMainHand(item);
                                     TrimChanger.CHAT_SENDER.sendMessage(player, "Trimmed armor cleared");
 
@@ -129,6 +131,8 @@ public class TrimCommand {
                                     TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
                                     TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
                                     TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
+                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
+
 
                                     return 1;
                                 })

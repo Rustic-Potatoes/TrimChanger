@@ -3,7 +3,6 @@ package net.rusticpotatoes.trimChanger;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.rusticpotatoes.trimChanger.command.TrimCommand;
@@ -17,11 +16,13 @@ public final class TrimChanger extends JavaPlugin {
 
     public static final TextColor ORANGE = TextColor.color(0xB87500);
     public static final TextColor RED_ORANGE = TextColor.color(0xF04900);
+    public static final TextColor LIGHT_GRAY = TextColor.color(0xDDDDDD);
+
     public static final TextComponent TEXT_PREFIX = Component.text()
             .append(GradientFormatter.getGradient(RED_ORANGE, ORANGE, "[TRIM]:").decorate(TextDecoration.BOLD))
             .appendSpace().build();
 
-    public static final ChatSender CHAT_SENDER = new ChatSender(TEXT_PREFIX, NamedTextColor.GRAY);
+    public static final ChatSender CHAT_SENDER = new ChatSender(TEXT_PREFIX, LIGHT_GRAY);
 
     private static TrimChanger instance;
 
@@ -29,6 +30,7 @@ public final class TrimChanger extends JavaPlugin {
     public final String name = this.getPluginMeta().getName();
     public final String version = this.getPluginMeta().getVersion();
     public final List<String> authors = this.getPluginMeta().getAuthors();
+    public final String description = this.getPluginMeta().getDescription();
 
     @Override
     public void onEnable() {
