@@ -1,6 +1,6 @@
 name: Trim-Changer
 version: '${version}'
-authors: [RusticPotatoes]
+authors: [ RusticPotatoes ]
 main: net.rusticpotatoes.trimChanger.TrimChanger
 api-version: '26.1.2'
 description: 'Minecraft plugin that allows you to remove the trim off of a armor piece and other helpful functions'

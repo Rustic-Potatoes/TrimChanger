@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.rusticpotatoes.trimChanger.command.TrimCommand;
 import net.rusticpotatoes.trimChanger.text.ChatSender;
 import net.rusticpotatoes.trimChanger.text.GradientFormatter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -32,9 +33,16 @@ public final class TrimChanger extends JavaPlugin {
     public final List<String> authors = this.getPluginMeta().getAuthors();
     public final String description = this.getPluginMeta().getDescription();
 
+    public static TrimChanger getInstance() {
+        return instance;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
+
+        saveDefaultConfig();
+        this.reloadConfig();
 
         // register trim command
         this.getLifecycleManager().registerEventHandler(
@@ -43,9 +51,5 @@ public final class TrimChanger extends JavaPlugin {
                     TrimCommand.register(event.registrar());
                 }
         );
-    }
-
-    public static TrimChanger getInstance() {
-        return instance;
     }
 }
