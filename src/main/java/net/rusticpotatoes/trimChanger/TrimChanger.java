@@ -9,6 +9,7 @@ import net.rusticpotatoes.trimChanger.command.TrimCommand;
 import net.rusticpotatoes.trimChanger.text.ChatSender;
 import net.rusticpotatoes.trimChanger.text.GradientFormatter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -35,6 +36,12 @@ public final class TrimChanger extends JavaPlugin {
 
     public static TrimChanger getInstance() {
         return instance;
+    }
+
+    public void updateConfig() {
+        saveDefaultConfig();
+        this.reloadConfig();
+        Bukkit.getOnlinePlayers().forEach(Player::updateCommands);
     }
 
     @Override

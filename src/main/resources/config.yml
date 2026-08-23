@@ -1,1 +1,26 @@
-allow-trim-clear: true
+# config for the Trim-Changer plugin
+# in order for the plugin to have updated values, the server must restart
+# or in the console (an operator can if enabled) run /trim reload
+# note: allow-trim-root must be true for the command to work
+
+# allow operators to run the reload option
+operator-reload: false
+# have chorus fruit particles when armor is cleared of trims
+# that can be seen by other players
+particle-clear: true
+# all options for the trim command
+command-options:
+  # allow clearing armor of trims
+  allow-clear: true
+  # allow about option
+  allow-about: true
+  # allow help option
+  allow-help: true
+  # allow querying of armor of other online players
+  allow-query: true
+  # allow trim command
+  # if value is false, all above command options will be ignored
+  # and if all above command options are false, this value will be ignored
+  # note: this does remove all functions of this plugin, and should only be used if
+  # you can't remove the plugin
+  allow-trim-root: true

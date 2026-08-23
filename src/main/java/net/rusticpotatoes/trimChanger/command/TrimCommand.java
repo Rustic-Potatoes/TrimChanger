@@ -5,8 +5,10 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
 import net.rusticpotatoes.trimChanger.TrimChanger;
+import net.rusticpotatoes.trimChanger.config.TrimConfig;
 import org.bukkit.EntityEffect;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -18,8 +20,10 @@ import java.util.Arrays;
 public class TrimCommand {
 
     public static void register(Commands commands) {
-        commands.register(Commands.literal("trim").then(Commands.literal("clear") // clears the held item of trims
-                        .requires(context -> TrimChanger.getInstance().getConfig().getBoolean("allow-trim-clear", false))
+        commands.register(Commands.literal("trim")
+                .requires(context -> TrimConfig.ALLOW_TRIM_ROOT_KEY.get())
+                .then(Commands.literal("clear") // clears the held item of trims
+                        .requires(context -> TrimConfig.ALLOW_CLEAR_KEY.get())
                         .executes(context -> {
 
                             CommandSender sender = context.getSource().getSender();
@@ -50,13 +54,30 @@ public class TrimCommand {
 
                             armorMeta.setTrim(null); // clears the armor trim
                             item.setItemMeta(armorMeta);
-                            player.playEffect(EntityEffect.TELEPORT_ENDER);
+
+                            if (TrimConfig.PARTICLE_CLEAR_KEY.get()) {
+                                player.playEffect(EntityEffect.TELEPORT_ENDER);
+                            }
                             player.getInventory().setItemInMainHand(item);
                             TrimChanger.CHAT_SENDER.sendMessage(player, "Trimmed armor cleared");
 
                             return 1;
                         })
+                ).then(Commands.literal("about") // shares info about the plugin
+                        .requires(context -> TrimConfig.ALLOW_ABOUT_KEY.get())
+                        .executes(context -> {
+                            CommandSender sender = context.getSource().getSender();
+
+                            TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
+                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
+                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
+                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
+
+
+                            return 1;
+                        })
                 ).then(Commands.literal("help") // shares info about the command
+                        .requires(context -> TrimConfig.ALLOW_HELP_KEY.get())
                         .executes(context -> {
                             CommandSender sender = context.getSource().getSender();
 
@@ -67,6 +88,7 @@ public class TrimCommand {
                             return 1;
                         })
                 ).then(Commands.literal("query") // displays the armor and trim a player is wearing
+                        .requires(context -> TrimConfig.ALLOW_QUERY_KEY.get())
                         .then(Commands.argument("player", ArgumentTypes.player())
                                 .executes(context -> {
 
@@ -120,23 +142,18 @@ public class TrimCommand {
                                             }
                                         }
                                     }
-
                                     return 1;
                                 })
                         )
-                ).then(Commands.literal("about") // shares info about the plugin
+                ).then(Commands.literal("reload")
+                        .requires(context -> TrimConfig.OPERATOR_RELOAD_KEY.get() && context.getSender().isOp() || context.getSender() instanceof ConsoleCommandSender)
                         .executes(context -> {
-                            CommandSender sender = context.getSource().getSender();
-
-                            TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
-
-
+                            TrimChanger.getInstance().updateConfig();
+                            TrimChanger.CHAT_SENDER.sendMessage(context.getSource().getSender(), "Reloaded TrimChanger Config");
                             return 1;
                         })
-                ).build()
+                )
+                .build()
         );
     }
 }
