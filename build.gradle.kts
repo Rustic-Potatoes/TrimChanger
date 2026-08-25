@@ -52,7 +52,7 @@ tasks {
 
     register<xyz.jpenilla.runpaper.task.RunServer>("runServer26.2") {
         minecraftVersion("26.2")
-        pluginJars(jar)
+        //pluginJars(jar)
         runDirectory.set(layout.projectDirectory.dir("run/26.2"))
     }
 }
