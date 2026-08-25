@@ -35,6 +35,9 @@ tasks {
 
     jar {
         archiveBaseName.set("TrimChanger")
+        from(rootDir) {
+            include("LICENSE")
+        }
     }
 
     runServer {
