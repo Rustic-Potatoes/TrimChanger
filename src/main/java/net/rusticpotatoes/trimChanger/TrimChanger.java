@@ -24,7 +24,11 @@ public final class TrimChanger extends JavaPlugin {
             .append(GradientFormatter.getGradient(RED_ORANGE, ORANGE, "[TRIM]:").decorate(TextDecoration.BOLD))
             .appendSpace().build();
 
-    public static final ChatSender CHAT_SENDER = new ChatSender(TEXT_PREFIX, LIGHT_GRAY);
+    public static final TextComponent SHORT_TEXT_PREFIX = Component.text()
+            .append(Component.text("|").color(TrimChanger.RED_ORANGE).decorate(TextDecoration.BOLD))
+            .appendSpace().build();
+
+    public static final ChatSender CHAT_SENDER = new ChatSender(TEXT_PREFIX, SHORT_TEXT_PREFIX, LIGHT_GRAY);
 
     private static TrimChanger instance;
 

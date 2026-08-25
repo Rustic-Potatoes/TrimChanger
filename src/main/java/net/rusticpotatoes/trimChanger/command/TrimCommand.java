@@ -79,17 +79,17 @@ public class TrimCommand {
                     TrimChanger.CHAT_SENDER.sendMessage(sender, "Usable commands:");
 
                     if (TrimConfig.ALLOW_CLEAR_KEY.get()) {
-                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim clear: clears the armor of trims in your main hand");
+                        TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "trim clear: clears the armor of trims in your main hand");
                     }
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info"); // doesn't need to check if the command is usable because its this command
+                    TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "trim help: shares this info"); // doesn't need to check if the command is usable because its this command
                     if (TrimConfig.ALLOW_ABOUT_KEY.get()) {
-                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help about: shares info about the plugin");
+                        TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "trim help about: shares info about the plugin");
                     }
                     if (TrimConfig.ALLOW_QUERY_KEY.get()) {
-                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
+                        TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
                     }
                     if (TrimConfig.OPERATOR_RELOAD_KEY.get() && sender.isOp() || sender instanceof ConsoleCommandSender) {
-                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim reload: reloads config values from file");
+                        TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "trim reload: reloads config values from file");
                     }
 
                     return 1;
@@ -101,9 +101,9 @@ public class TrimCommand {
                     CommandSender sender = context.getSource().getSender();
 
                     TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
+                    TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "Version: " + TrimChanger.getInstance().version);
+                    TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
+                    TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender, "Description: " + TrimChanger.getInstance().description);
 
 
                     return 1;
@@ -140,7 +140,7 @@ public class TrimCommand {
                                     ItemMeta meta = item.getItemMeta();
 
                                     if (!(meta instanceof ArmorMeta armorMeta)) { // if not wearing armor but a wearable item
-                                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                        TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender,
                                                 Component.translatable(item.getType())
                                         );
                                     } else {
@@ -148,12 +148,12 @@ public class TrimCommand {
                                         ArmorTrim trimData = armorMeta.getTrim();
 
                                         if (trimData == null) { // armor is not trimmed
-                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                            TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender,
                                                     Component.translatable(item.getType())
                                                             .append(Component.text(": Not Trimmed"))
                                             );
                                         } else { // armor is trimmed
-                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                            TrimChanger.CHAT_SENDER.sendMessageWithShortPrefix(sender,
                                                     Component.translatable(item.getType())
                                                             .append(Component.text(": "))
                                                             .append(trimData.getPattern().description().color(trimData.getMaterial().description().color())

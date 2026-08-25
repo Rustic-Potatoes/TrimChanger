@@ -41,6 +41,12 @@ tasks {
         minecraftVersion("26.1.2")
     }
 
+    register<xyz.jpenilla.runpaper.task.RunServer>("runServer26.1.2") {
+        minecraftVersion("26.1.2")
+        pluginJars(jar)
+        runDirectory.set(layout.projectDirectory.dir("run/26.1.2"))
+    }
+
     register<xyz.jpenilla.runpaper.task.RunServer>("runServer26.2") {
         minecraftVersion("26.2")
         pluginJars(jar)

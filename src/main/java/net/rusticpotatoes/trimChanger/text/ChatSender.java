@@ -10,10 +10,12 @@ import org.bukkit.command.CommandSender;
 
 public class ChatSender {
     private final TextComponent prefix;
+    private final TextComponent shortPrefix;
     private final TextColor defaultColor;
 
-    public ChatSender(TextComponent preFix, TextColor defaultColor) {
+    public ChatSender(TextComponent preFix, TextComponent shortPrefix, TextColor defaultColor) {
         this.prefix = preFix;
+        this.shortPrefix = shortPrefix;
         this.defaultColor = defaultColor;
     }
 
@@ -29,11 +31,11 @@ public class ChatSender {
         }
     }
 
-    public void sendMessageWithoutPrefix(CommandSender destination, Component message, boolean useDefaultColor) {
+    public void sendMessageWithShortPrefix(CommandSender destination, Component message, boolean useDefaultColor) {
         if ((useDefaultColor)) {
-            sendSimpleMessage(Component.text().append(Component.text("|").color(TrimChanger.RED_ORANGE).decorate(TextDecoration.BOLD).appendSpace()).build(), destination, message.color(defaultColor));
+            sendSimpleMessage(shortPrefix, destination, message.color(defaultColor));
         } else {
-            sendSimpleMessage(Component.text().append(Component.text("|").color(TrimChanger.RED_ORANGE).decorate(TextDecoration.BOLD).appendSpace()).build(), destination, message);
+            sendSimpleMessage(shortPrefix, destination, message);
         }
     }
 
@@ -45,13 +47,13 @@ public class ChatSender {
         sendMessage(destination, Component.text(message), true);
     }
 
-    public void sendMessageWithoutPrefix(CommandSender destination, Component message) {
-        sendMessageWithoutPrefix(destination, message, true);
+    public void sendMessageWithShortPrefix(CommandSender destination, Component message) {
+        sendMessageWithShortPrefix(destination, message, true);
     }
 
 
-    public void sendMessageWithoutPrefix(CommandSender destination, String message) {
-        sendMessageWithoutPrefix(destination, Component.text(message), true);
+    public void sendMessageWithShortPrefix(CommandSender destination, String message) {
+        sendMessageWithShortPrefix(destination, Component.text(message), true);
 
     }
 }
