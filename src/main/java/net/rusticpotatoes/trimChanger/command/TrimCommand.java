@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.rusticpotatoes.trimChanger.TrimChanger;
 import net.rusticpotatoes.trimChanger.config.TrimConfig;
 import org.bukkit.EntityEffect;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -20,140 +21,151 @@ import java.util.Arrays;
 public class TrimCommand {
 
     public static void register(Commands commands) {
-        commands.register(Commands.literal("trim")
-                .requires(context -> TrimConfig.ALLOW_TRIM_ROOT_KEY.get())
-                .then(Commands.literal("clear") // clears the held item of trims
-                        .requires(context -> TrimConfig.ALLOW_CLEAR_KEY.get())
+        var trimRoot = Commands.literal("trim").requires(context -> TrimConfig.ALLOW_TRIM_ROOT_KEY.get());
+
+        var clear = Commands.literal("clear") // clears the held item of trims
+                .requires(context -> TrimConfig.ALLOW_CLEAR_KEY.get())
+                .executes(context -> {
+
+                    CommandSender sender = context.getSource().getSender();
+
+                    if (!(sender instanceof Player player)) {
+                        TrimChanger.CHAT_SENDER.sendMessage(sender, "You must be a player to use this command");
+                        return 0;
+                    }
+
+                    ItemStack item = player.getInventory().getItemInMainHand();
+
+                    if (item.isEmpty()) {
+                        TrimChanger.CHAT_SENDER.sendMessage(player, "No item held");
+                        return 0;
+                    }
+
+                    ItemMeta meta = item.getItemMeta();
+
+                    if (!(meta instanceof ArmorMeta armorMeta)) {
+                        TrimChanger.CHAT_SENDER.sendMessage(player, "You are not holding any armor");
+                        return 0;
+                    }
+
+                    if (!armorMeta.hasTrim()) {
+                        TrimChanger.CHAT_SENDER.sendMessage(player, "That armor doesn't have a trim");
+                        return 0;
+                    }
+
+                    armorMeta.setTrim(null); // clears the armor trim
+                    item.setItemMeta(armorMeta);
+
+                    if (TrimConfig.PARTICLE_CLEAR_KEY.get()) {
+                        player.playEffect(EntityEffect.TELEPORT_ENDER);
+                    }
+                    player.getInventory().setItemInMainHand(item);
+                    TrimChanger.CHAT_SENDER.sendMessage(player, "Trimmed armor cleared");
+
+                    return 1;
+                });
+
+        var help = Commands.literal("help") // shares info about the command
+                .requires(context -> TrimConfig.ALLOW_HELP_KEY.get())
+                .executes(context -> {
+                    CommandSender sender = context.getSource().getSender();
+
+                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info");
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
+
+                    return 1;
+                });
+
+        var about = Commands.literal("about") // shares info about the plugin
+                .requires(context -> TrimConfig.ALLOW_ABOUT_KEY.get())
+                .executes(context -> {
+                    CommandSender sender = context.getSource().getSender();
+
+                    TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
+
+
+                    return 1;
+                });
+
+        var query = Commands.literal("query") // displays the armor and trim a player is wearing
+                .requires(context -> TrimConfig.ALLOW_QUERY_KEY.get())
+                .then(Commands.argument("player", ArgumentTypes.player())
                         .executes(context -> {
 
                             CommandSender sender = context.getSource().getSender();
 
-                            if (!(sender instanceof Player player)) {
-                                TrimChanger.CHAT_SENDER.sendMessage(sender, "You must be a player to use this command");
-                                return 0;
+                            PlayerSelectorArgumentResolver resolver = context.getArgument("player", PlayerSelectorArgumentResolver.class);
+                            Player target = resolver.resolve(context.getSource()).getFirst();
+
+                            ItemStack[] armorContents = target.getInventory().getArmorContents();
+
+                            if (Arrays.stream(armorContents).allMatch(item -> item == null || item == ItemStack.empty())) {
+                                TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
+                                        .append(Component.text(" is wearing no armor"))
+                                );
+                                return 1;
                             }
 
-                            ItemStack item = player.getInventory().getItemInMainHand();
+                            TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
+                                    .append(Component.text(" is wearing: "))
+                            );
 
-                            if (item.isEmpty()) {
-                                TrimChanger.CHAT_SENDER.sendMessage(player, "No item held");
-                                return 0;
-                            }
+                            // loop through all armor slots
+                            for (ItemStack item : armorContents) {
 
-                            ItemMeta meta = item.getItemMeta();
+                                if (item != null) { // if not wearing any armor in that slot, ignore
 
-                            if (!(meta instanceof ArmorMeta armorMeta)) {
-                                TrimChanger.CHAT_SENDER.sendMessage(player, "You are not holding any armor");
-                                return 0;
-                            }
+                                    ItemMeta meta = item.getItemMeta();
 
-                            if (!armorMeta.hasTrim()) {
-                                TrimChanger.CHAT_SENDER.sendMessage(player, "That armor doesn't have a trim");
-                                return 0;
-                            }
-
-                            armorMeta.setTrim(null); // clears the armor trim
-                            item.setItemMeta(armorMeta);
-
-                            if (TrimConfig.PARTICLE_CLEAR_KEY.get()) {
-                                player.playEffect(EntityEffect.TELEPORT_ENDER);
-                            }
-                            player.getInventory().setItemInMainHand(item);
-                            TrimChanger.CHAT_SENDER.sendMessage(player, "Trimmed armor cleared");
-
-                            return 1;
-                        })
-                ).then(Commands.literal("about") // shares info about the plugin
-                        .requires(context -> TrimConfig.ALLOW_ABOUT_KEY.get())
-                        .executes(context -> {
-                            CommandSender sender = context.getSource().getSender();
-
-                            TrimChanger.CHAT_SENDER.sendMessage(sender, "Plugin Name: " + TrimChanger.getInstance().name);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Version: " + TrimChanger.getInstance().version);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Authors: " + TrimChanger.getInstance().authors);
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "Description: " + TrimChanger.getInstance().description);
-
-
-                            return 1;
-                        })
-                ).then(Commands.literal("help") // shares info about the command
-                        .requires(context -> TrimConfig.ALLOW_HELP_KEY.get())
-                        .executes(context -> {
-                            CommandSender sender = context.getSource().getSender();
-
-                            TrimChanger.CHAT_SENDER.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info");
-                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
-
-                            return 1;
-                        })
-                ).then(Commands.literal("query") // displays the armor and trim a player is wearing
-                        .requires(context -> TrimConfig.ALLOW_QUERY_KEY.get())
-                        .then(Commands.argument("player", ArgumentTypes.player())
-                                .executes(context -> {
-
-                                    CommandSender sender = context.getSource().getSender();
-
-                                    PlayerSelectorArgumentResolver resolver = context.getArgument("player", PlayerSelectorArgumentResolver.class);
-                                    Player target = resolver.resolve(context.getSource()).getFirst();
-
-                                    ItemStack[] armorContents = target.getInventory().getArmorContents();
-
-                                    if (Arrays.stream(armorContents).allMatch(item -> item == null || item == ItemStack.empty())) {
-                                        TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
-                                                .append(Component.text(" is wearing no armor"))
+                                    if (!(meta instanceof ArmorMeta armorMeta)) { // if not wearing armor but a wearable item
+                                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                                Component.translatable(item.getType())
                                         );
-                                        return 1;
-                                    }
+                                    } else {
 
-                                    TrimChanger.CHAT_SENDER.sendMessage(sender, target.displayName()
-                                            .append(Component.text(" is wearing: "))
-                                    );
+                                        ArmorTrim trimData = armorMeta.getTrim();
 
-                                    // loop through all armor slots
-                                    for (ItemStack item : armorContents) {
-
-                                        if (item != null) { // if not wearing any armor in that slot, ignore
-
-                                            ItemMeta meta = item.getItemMeta();
-
-                                            if (!(meta instanceof ArmorMeta armorMeta)) { // if not wearing armor but a wearable item
-                                                TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
-                                                        Component.translatable(item.getType())
-                                                );
-                                            } else {
-
-                                                ArmorTrim trimData = armorMeta.getTrim();
-
-                                                if (trimData == null) { // armor is not trimmed
-                                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
-                                                            Component.translatable(item.getType())
-                                                                    .append(Component.text(": Not Trimmed"))
-                                                    );
-                                                } else { // armor is trimmed
-                                                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
-                                                            Component.translatable(item.getType())
-                                                                    .append(Component.text(": "))
-                                                                    .append(trimData.getPattern().description().color(trimData.getMaterial().description().color())
-                                                                            .append(Component.text(", ")))
-                                                                    .append(trimData.getMaterial().description())
-                                                    );
-                                                }
-                                            }
+                                        if (trimData == null) { // armor is not trimmed
+                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                                    Component.translatable(item.getType())
+                                                            .append(Component.text(": Not Trimmed"))
+                                            );
+                                        } else { // armor is trimmed
+                                            TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender,
+                                                    Component.translatable(item.getType())
+                                                            .append(Component.text(": "))
+                                                            .append(trimData.getPattern().description().color(trimData.getMaterial().description().color())
+                                                                    .append(Component.text(", ")))
+                                                            .append(trimData.getMaterial().description())
+                                            );
                                         }
                                     }
-                                    return 1;
-                                })
-                        )
-                ).then(Commands.literal("reload")
-                        .requires(context -> TrimConfig.OPERATOR_RELOAD_KEY.get() && context.getSender().isOp() || context.getSender() instanceof ConsoleCommandSender)
-                        .executes(context -> {
-                            TrimChanger.getInstance().updateConfig();
-                            TrimChanger.CHAT_SENDER.sendMessage(context.getSource().getSender(), "Reloaded TrimChanger Config");
+                                }
+                            }
                             return 1;
                         })
-                )
-                .build()
+                );
+
+        var reload = Commands.literal("reload") // reload config values
+                .requires(context -> TrimConfig.OPERATOR_RELOAD_KEY.get() && context.getSender().isOp() || context.getSender() instanceof ConsoleCommandSender)
+                .executes(context -> {
+                    TrimChanger.getInstance().updateConfig();
+                    TrimChanger.CHAT_SENDER.sendMessage(context.getSource().getSender(), "Reloaded TrimChanger Config");
+                    return 1;
+                });
+
+        // command registration
+        commands.register(
+                trimRoot
+                        .then(clear)
+                        .then(help.then(about))
+                        .then(query)
+                        .then(reload)
+                        .build()
         );
     }
 }
