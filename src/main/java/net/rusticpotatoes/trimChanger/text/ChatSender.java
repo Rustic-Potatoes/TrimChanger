@@ -3,6 +3,8 @@ package net.rusticpotatoes.trimChanger.text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.rusticpotatoes.trimChanger.TrimChanger;
 import org.bukkit.command.CommandSender;
 
 
@@ -29,9 +31,9 @@ public class ChatSender {
 
     public void sendMessageWithoutPrefix(CommandSender destination, Component message, boolean useDefaultColor) {
         if ((useDefaultColor)) {
-            sendSimpleMessage(Component.empty(), destination, message.color(defaultColor));
+            sendSimpleMessage(Component.text().append(Component.text("|").color(TrimChanger.RED_ORANGE).decorate(TextDecoration.BOLD).appendSpace()).build(), destination, message.color(defaultColor));
         } else {
-            sendSimpleMessage(Component.empty(), destination, message);
+            sendSimpleMessage(Component.text().append(Component.text("|").color(TrimChanger.RED_ORANGE).decorate(TextDecoration.BOLD).appendSpace()).build(), destination, message);
         }
     }
 

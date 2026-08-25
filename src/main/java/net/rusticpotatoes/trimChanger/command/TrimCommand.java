@@ -6,10 +6,11 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import net.kyori.adventure.text.Component;
 import net.rusticpotatoes.trimChanger.TrimChanger;
 import net.rusticpotatoes.trimChanger.config.TrimConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -27,10 +28,15 @@ public class TrimCommand {
                 .requires(context -> TrimConfig.ALLOW_CLEAR_KEY.get())
                 .executes(context -> {
 
-                    CommandSender sender = context.getSource().getSender();
+                    Entity executor = context.getSource().getExecutor();
 
-                    if (!(sender instanceof Player player)) {
-                        TrimChanger.CHAT_SENDER.sendMessage(sender, "You must be a player to use this command");
+                    if (executor == null) {
+                        TrimChanger.CHAT_SENDER.sendMessage(Bukkit.getConsoleSender(), "You must be a player to use this command");
+                        return 0;
+                    }
+
+                    if (!(executor instanceof Player player)) {
+                        TrimChanger.CHAT_SENDER.sendMessage(executor, "You must be a player to use this command");
                         return 0;
                     }
 
@@ -70,9 +76,21 @@ public class TrimCommand {
                 .executes(context -> {
                     CommandSender sender = context.getSource().getSender();
 
-                    TrimChanger.CHAT_SENDER.sendMessage(sender, "trim clear: clears the armor of trims in your main hand");
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info");
-                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
+                    TrimChanger.CHAT_SENDER.sendMessage(sender, "Usable commands:");
+
+                    if (TrimConfig.ALLOW_CLEAR_KEY.get()) {
+                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim clear: clears the armor of trims in your main hand");
+                    }
+                    TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help: shares this info"); // doesn't need to check if the command is usable because its this command
+                    if (TrimConfig.ALLOW_ABOUT_KEY.get()) {
+                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim help about: shares info about the plugin");
+                    }
+                    if (TrimConfig.ALLOW_QUERY_KEY.get()) {
+                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim query <player>: displays the armor and trim a player is wearing");
+                    }
+                    if (TrimConfig.OPERATOR_RELOAD_KEY.get() && sender.isOp() || sender instanceof ConsoleCommandSender) {
+                        TrimChanger.CHAT_SENDER.sendMessageWithoutPrefix(sender, "trim reload: reloads config values from file");
+                    }
 
                     return 1;
                 });

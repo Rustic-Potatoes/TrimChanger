@@ -20,7 +20,6 @@ command-options:
   allow-query: true
   # allow trim command
   # if value is false, all above command options will be ignored
-  # and if all above command options are false, this value will be ignored
   # note: this does remove all functions of this plugin, and should only be used if
   # you can't remove the plugin
   allow-trim-root: true
